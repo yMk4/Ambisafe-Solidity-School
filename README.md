@@ -1,1 +1,1 @@
-# Ambisafe-Solidity-School.-Loan-Contract
+# Ambisafe-Solidity-School
