@@ -50,7 +50,7 @@ contract Credit is Ownable {
     // functions
     function newRequestedCredit(string _name, string _surname, string _idNumber, uint _amount) onlyNotOwner public returns (bool success) {
         require(_amount >= 0);
-        requested[msg.sender] += _amount;
+        requested[msg.sender].add(_amount);
         uint debtorId = debtors.push(Debtor(_name, _surname, _idNumber, _amount)) - 1;
         debtorsCount[msg.sender]++;
         return true;
@@ -58,17 +58,17 @@ contract Credit is Ownable {
     }
     
     function approveRequestedCredit(address _requestor) onlyOwner public returns(bool success) {
-     	uint amount = requested[_requestor];
-        requested[_requestor] -= amount;
-        credits[_requestor] += amount;
+        uint amount = requested[_requestor];
+        requested[_requestor].sub(amount);
+        credits[_requestor].add(amount);
         Credited(_requestor, amount);
         return true;
     }
     
     function newRequestedRefund(string _name, string _surname, string _idNumber, uint _amount) onlyNotOwner public returns (bool success) {
         require(_amount >= 0);
-        credits[msg.sender] -= _amount;
-        refunded[msg.sender] += _amount;
+        credits[msg.sender].sub(_amount);
+        refunded[msg.sender].add(_amount);
         uint refundRequestorId = debtors.push(Debtor(_name, _surname, _idNumber, _amount)) - 1;
         refundRequestorsCount[msg.sender]++;
         return true;
@@ -77,8 +77,8 @@ contract Credit is Ownable {
     
      function approveRequestedRefund(address _debtor) onlyOwner public returns(bool success) {
         uint amount = refunded[_debtor];
-        refunded[_debtor] -= amount;
+        refunded[_debtor].sub(amount);
         Refunded(_debtor, amount);
         return true;
     }
-}
+}  
