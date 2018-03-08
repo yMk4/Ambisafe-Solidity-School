@@ -29,7 +29,7 @@ contract Credit is Ownable {
     }
     
     // information about persons that want to receive a refund
-    struct RefundRequestors {
+    struct RefundRequestor {
         string name;
         string surname;
         string idNumber;
@@ -38,7 +38,7 @@ contract Credit is Ownable {
     
     // arrays
     Debtor[] private debtors; // an array of all debtors
-    RefundRequestors[] private refundRequestors; // an array of refund requestors
+    RefundRequestor[] private refundRequestors; // an array of refund requestors
     
     // mappings
     mapping(address => uint) private debtorsCount; 
@@ -65,11 +65,12 @@ contract Credit is Ownable {
         return true;
     }
     
-    function newRequestedRefund(string _name, string _surname, string _idNumber, uint _amount) onlyNotOwner public returns (bool success) {
+    function newRequestedRefund(string _name, string _surname, string _idNumber, uint _amount, address _debtor) onlyNotOwner public returns (bool success) {
         require(_amount >= 0);
+        require(msg.sender == _debtor);
         credits[msg.sender].sub(_amount);
         refunded[msg.sender].add(_amount);
-        uint refundRequestorId = debtors.push(Debtor(_name, _surname, _idNumber, _amount)) - 1;
+        uint refundRequestorId = refundRequestors.push(RefundRequestor(_name, _surname, _idNumber, _amount)) - 1;
         refundRequestorsCount[msg.sender]++;
         return true;
         NewRefundRequestor(refundRequestorId, _name, _surname, _idNumber, _amount);
